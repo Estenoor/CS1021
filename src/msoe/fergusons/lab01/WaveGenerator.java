@@ -36,7 +36,12 @@ public class WaveGenerator {
                     ArrayList<Double> reversedSamples = reverseWavFile(audioSamples);
 
                     break;
-
+                case 2:
+                    WavFile simpleWavFile = generateSimpleWavFile();
+                    break;
+                case 3:
+                    WavFile stereoWavFile = generateStereoWavFile();
+                    break;
             }
 
         }
@@ -86,4 +91,15 @@ public class WaveGenerator {
         return reversedSamples;
     }
 
+    public static WavFile generateSimpleWavFile() {
+        //placeholder
+
+        return null;
+    }
+
+    public static WavFile generateStereoWavFile() {
+        //placeholder
+
+        return null;
+    }
 }
