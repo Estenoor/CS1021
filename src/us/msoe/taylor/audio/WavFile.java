@@ -8,7 +8,7 @@
 
 // You must not change the following package declaration.
 // Instead, you must place this file in the appropriate folder.
-package msoe.taylor.audio;
+package us.msoe.taylor.audio;
 
 import java.io.File;
 import java.io.FileOutputStream;

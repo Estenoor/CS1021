@@ -7,7 +7,7 @@
  */
 package msoe.fergusons.lab01;
 
-import msoe.taylor.audio.WavFile;
+import us.msoe.taylor.audio.WavFile;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -26,9 +26,9 @@ public class WaveGenerator {
 
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
-        int command = getUserCommand(input);
         boolean exitProgram = false;
         do {
+            int command = getUserCommand(input);
             switch(command) {
                 case 0: //Exit the Program
                     exitProgram = true;
@@ -63,17 +63,33 @@ public class WaveGenerator {
                     }
                     break;
                 case 2: // Generate Simple WavFile
-                    WavFile simpleWavFile = generateSimpleWavFile();
-
+                    String simpleFileName = getFileName(input);
+                    System.out.print("Please Enter The Frequency you wish to use: ");
+                    int frequency = getUserFrequency(input);
+                    generateSimpleWavFile(frequency, simpleFileName);
                     break;
                 case 3: // Generate Stereo File
-                    WavFile stereoWavFile = generateStereoWavFile();
+                    String stereoFileName = getFileName(input);
+                    System.out.print("Please Enter The First Frequency you wish to use: ");
+                    int frequencyOne = getUserFrequency(input);
+                    System.out.print("Please Enter The Second Frequency you wish to use: ");
+                    int frequencyTwo = getUserFrequency(input);
+                    generateStereoWavFile(frequencyOne, frequencyTwo, stereoFileName);
                     break;
-                default: // Continue asking for user input
-                    command = getUserCommand(input);
             }
 
         } while(!exitProgram);
+        // Closes the Scanner and releases the Resources
+        input.close();
+    }
+
+    /**
+     * Simple method to read in a frequency from the console
+     * @param input the scanner to read the from the console with
+     * @return the frequency specified by the user
+     */
+    private static int getUserFrequency(Scanner input) {
+        return Integer.valueOf(input.nextLine());
     }
 
     /**
@@ -88,7 +104,7 @@ public class WaveGenerator {
         System.out.println("2: Generate Single Tone Wave File");
         System.out.println("3: Generate Stereo Wave File");
         System.out.println("----------------------------------");
-        System.out.println("Please Choose an Option");
+        System.out.print("Please Choose an Option: ");
         int command = Integer.valueOf(input.nextLine());
         System.out.println(); //Skips Line in Console for ease of user input and reading
         return command;
@@ -102,7 +118,6 @@ public class WaveGenerator {
     private static String getFileName(Scanner input) {
         System.out.print("Please Enter the Name of the WavFile you wish to create or Reverse: ");
         String fileName = input.nextLine();
-        System.out.println(); //Skips Line in Console for ease of user input and reading
         return fileName;
     }
 
@@ -123,7 +138,6 @@ public class WaveGenerator {
      * Generates a simple wave file from a given frequency
      * @param frequency The frequency to use when creating the wave file.
      * @param fileName The name of the audio file to create
-     * @return The Generated WavFile Object
      */
     public static void generateSimpleWavFile(double frequency, String fileName) {
         int numChannels = 1;
@@ -137,19 +151,42 @@ public class WaveGenerator {
         for(int i = 0; i < SAMPLE_RATE; i++) {
             audioSamples.add(generateSineWaveValues(frequency, i));
         }
+        // Saves Audio Samples to Simple Wave File
         simpleWavFile.setSamples(audioSamples);
         // Closes Simple Wave FIle
         simpleWavFile.close();
+        System.out.println("Simple Wav File Saved Correctly!");
     }
 
     /**
      * Generates a simple wave file in stereo
-     * @return The Generated WavFile Object
+     * @param frequencyOne The first frequency to use
+     * @param frequencyTwo The second frequency to use
+     * @param fileName the filename to save the generated wave file to
      */
-    public static WavFile generateStereoWavFile() {
-        //placeholder
+    public static void generateStereoWavFile(double frequencyOne,
+                                             double frequencyTwo,
+                                             String fileName) {
+        int numChannels = 2;
+        WavFile stereoWavFile = new WavFile(fileName + ".wav",
+                numChannels,
+                NUM_FRAMES,
+                VALID_BITS,
+                SAMPLE_RATE);
 
-        return null;
+        ArrayList<Double> audioSamples = new ArrayList<Double>();
+        for(int i = 0; i < SAMPLE_RATE * 2; i++) {
+            if ((i % 2) == 0) {
+                audioSamples.add(generateSineWaveValues(frequencyOne, i));
+            } else {
+                audioSamples.add(generateSineWaveValues(frequencyTwo, i));
+            }
+        }
+        // Saves Audio Samples to Stereo Wave File
+        stereoWavFile.setSamples(audioSamples);
+        // Closes Stereo Wave FIle
+        stereoWavFile.close();
+        System.out.println("Stereo Wav File Saved Correctly!");
     }
 
     /**
@@ -159,6 +196,6 @@ public class WaveGenerator {
      * @return returns the requested audio sample
      */
     public static Double generateSineWaveValues(double frequency, double sample) {
-        return (2 * Math.PI) * sample * (frequency / SAMPLE_RATE);
+        return Math.sin((2 * Math.PI) * sample * (frequency / SAMPLE_RATE));
     }
 }
